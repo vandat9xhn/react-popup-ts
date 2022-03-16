@@ -13,16 +13,47 @@ npm install --save react-popup-ts
 ## Usage
 
 ```tsx
-import React, { Component } from 'react'
+import React, { useState } from 'react';
 
-import MyComponent from 'react-popup-ts'
-import 'react-popup-ts/dist/index.css'
+import { Popup } from 'react-popup-ts';
+import 'react-popup-ts/dist/index.css';
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
-}
+//
+const App = () => {
+    //
+    const [is_show, setIsShow] = useState(false);
+
+    //
+    function toggleShow() {
+        setIsShow((is_show) => !is_show);
+    }
+
+    //
+    return (
+        <div>
+            <div onClick={toggleShow}>Toggle</div>
+
+            <div>
+                <Popup is_show={is_show} top={200}>
+                    <div
+                        style={{
+                            width: 'fit-content',
+                            padding: '6px 12px',
+                            borderRadius: '10px',
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            color: 'white'
+                        }}
+                    >
+                        This is Popup
+                    </div>
+                </Popup>
+            </div>
+        </div>
+    );
+};
+
+export default App;
+
 ```
 
 ## License
