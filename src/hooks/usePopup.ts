@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { common_types, useForceUpdate } from 'react-commons-ts';
+//
+import { PopupObj } from '../types/common';
 
 //
-export interface usePopupProps {
+export interface usePopupProps extends Omit<PopupObj, 'children'> {
     ref_popup_elm: common_types.RefElmType<HTMLElement>;
-    is_show: boolean;
-    keyframes?: Keyframe[] | PropertyIndexedKeyframes;
-    duration?: number;
+
+    handleAfterEndTimeExist?: () => void;
 }
 
 //
@@ -31,12 +32,17 @@ export function usePopup({
     ref_popup_elm,
     is_show,
     keyframes = default_keyframes,
-    duration = 750
+    duration = 750,
+    time_exist = 3000,
+
+    handleAfterEndTimeExist = () => {}
 }: usePopupProps) {
     // -----
     const ref_animation = useRef<null | Animation>(null);
     const ref_show_popup = useRef(false);
     const ref_display_popup = useRef(false);
+
+    const ref_interval_exist = useRef<null | NodeJS.Timeout>(null);
     const ref_interval_end = useRef<null | NodeJS.Timeout>(null);
 
     //
@@ -50,6 +56,15 @@ export function usePopup({
             handleHide();
         }
     }, [is_show]);
+
+    // -----
+
+    function clearTimeExist() {
+        if (ref_interval_exist.current) {
+            clearTimeout(ref_interval_exist.current);
+            ref_interval_exist.current = null;
+        }
+    }
 
     // -----
 
@@ -71,6 +86,14 @@ export function usePopup({
     function handleShow() {
         if (!ref_popup_elm.current || !keyframes) {
             return;
+        }
+
+        if (time_exist) {
+            clearTimeExist();
+
+            ref_interval_exist.current = setTimeout(() => {
+                handleHide();
+            }, time_exist);
         }
 
         if (ref_animation.current) {
@@ -110,6 +133,11 @@ export function usePopup({
         ref_show_popup.current = false;
         ref_display_popup.current = false;
         forceUpdate();
+
+        if (time_exist) {
+            clearTimeExist();
+            handleAfterEndTimeExist();
+        }
     }
 
     // ----

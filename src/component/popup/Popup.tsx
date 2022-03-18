@@ -1,27 +1,25 @@
 import * as React from 'react';
 //
+import { PopupObj } from '../../types/common';
+//
 import { usePopup, usePopupProps } from '../../hooks/usePopup';
 //
 import PopupStyles from './Popup.scss';
 
 //
-export interface PopupProps {
-    is_show: boolean;
-    children: React.ReactElement;
-
-    duration?: number;
-    keyframes?: usePopupProps['keyframes'];
-    top: number | string;
+export interface PopupProps extends PopupObj {
+    handleAfterEndTimeExist?: usePopupProps['handleAfterEndTimeExist'];
 }
 
 //
 function Popup({
-    top,
-    children,
-
     is_show,
     duration,
-    keyframes
+    keyframes,
+    time_exist,
+    children,
+
+    handleAfterEndTimeExist
 }: PopupProps) {
     //
     const ref_popup_elm = React.useRef(null);
@@ -31,7 +29,10 @@ function Popup({
         ref_popup_elm: ref_popup_elm,
         is_show: is_show,
         keyframes: keyframes,
-        duration: duration
+        duration: duration,
+        time_exist: time_exist,
+
+        handleAfterEndTimeExist: handleAfterEndTimeExist
     });
 
     // -----
@@ -48,7 +49,6 @@ function Popup({
             className={`Popup ${PopupStyles['Popup']} ${
                 PopupStyles[ref_show_popup.current ? '' : 'Popup-hidden']
             }`}
-            style={{ top: top }}
         >
             {children}
         </div>
